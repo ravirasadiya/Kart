@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import {Helmet} from 'react-helmet'
+import { Helmet } from 'react-helmet'
 import '../../common/index.scss';
 import Slider from 'react-slick';
-import {Link} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Modal from 'react-responsive-modal';
 import ThemeSettings from "../../common/theme-settings"
 
@@ -19,14 +19,25 @@ import Instagram from "../common/instagram"
 import HeaderOne from "../../common/headers/header-one"
 import FooterOne from "../../common/footers/footer-one"
 import BlogSection from "../common/blogsection";
+import { bannerService } from '../../../services';
+import { imageResizeURL } from '../../../_helpers';
+import { connect } from "react-redux";
 
 class Beauty extends Component {
-    constructor(props){
+    constructor(props) {
         super(props)
 
         this.state = {
+            bannerList: [],
             open: false
         }
+        bannerService.getAll().then(data => {
+            this.setState({
+                bannerList: data
+            })
+        })
+
+
     }
     onOpenModal = () => {
         this.setState({ open: true });
@@ -37,20 +48,20 @@ class Beauty extends Component {
     };
 
     componentDidMount() {
-        document.getElementById("color").setAttribute("href", `${process.env.PUBLIC_URL}/assets/css/color3.css` );
+        document.getElementById("color").setAttribute("href", `${process.env.PUBLIC_URL}/assets/css/color3.css`);
     }
 
-    render(){
-
+    render() {
+        const { bannerList } = this.state;
         return (
             <div>
                 <Helmet>
                     <title>MultiKart | Beauty Store</title>
                 </Helmet>
-                <HeaderOne logoName={'layout3/logo.png'}/>
+                <HeaderOne logoName={'layout3/logo.png'} />
                 <section className="p-0">
                     <Slider className="slide-1 home-slider">
-                        <div>
+                        {/* <div>
                             <div className="home home34">
                                 <div className="container">
                                     <div className="row">
@@ -65,23 +76,31 @@ class Beauty extends Component {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div>
-                            <div className="home home35">
-                                <div className="container">
-                                    <div className="row">
-                                        <div className="col">
-                                            <div className="slider-contain">
-                                                <div>
-                                                    <h4>save 30% off</h4>
-                                                    <h1>beauty products</h1><a href="#" className="btn btn-solid">shop
-                                                    now</a></div>
+                        </div> */}
+
+                        {bannerList.map((item, i) => (
+                            <div>
+                                <div className="home home35" key={i} style={{ backgroundImage: `url(` + imageResizeURL(item.image, item.imagePath, 690, 1920) + `)` }}>
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="col">
+                                                <div className="slider-contain">
+                                                    <div>
+                                                        <h4>{item.content}</h4>
+                                                        <h1>{item.title}</h1>
+                                                        {item.link &&
+                                                            <a href={item.link} className="btn btn-solid">shop
+                                                    now</a>}
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        ))}
+
+
                     </Slider>
                 </section>
 
@@ -99,7 +118,7 @@ class Beauty extends Component {
                                         <h2>about us</h2>
                                         <div className="about-text">
                                             <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-                                                accusantium doloremque laudantium, totam rem aperiam.sit voluptatem
+                                            accusantium doloremque laudantium, totam rem aperiam.sit voluptatem
                                                 accusantium doloremque laudantium,totam rem aperiam.</p>
                                         </div>
                                         <div className="service small-section pb-0">
@@ -153,7 +172,7 @@ class Beauty extends Component {
                                     id="video"
                                     className="modal fade video-modal" center>
                                     <iframe src="https://www.youtube.com/embed/FRIDLxM8Roc"
-                                            allowFullScreen></iframe>
+                                        allowFullScreen></iframe>
                                 </Modal>
                             </div>
                         </div>
@@ -194,7 +213,7 @@ class Beauty extends Component {
                 </div>
                 {/*Instagram Section End*/}
 
-                <FooterOne logoName={'layout3/logo.png'}/>
+                <FooterOne logoName={'layout3/logo.png'} />
 
                 <ThemeSettings />
             </div>
@@ -203,4 +222,4 @@ class Beauty extends Component {
 }
 
 
-export default Beauty;
+export default connect()(Beauty);
